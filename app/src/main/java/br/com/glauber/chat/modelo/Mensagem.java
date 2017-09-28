@@ -1,5 +1,7 @@
 package br.com.glauber.chat.modelo;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by Glauber on 26/09/2017.
  */
@@ -7,7 +9,7 @@ package br.com.glauber.chat.modelo;
 public class Mensagem {
 
     private int id;
-    private String texto;
+    @SerializedName("text") private String texto;
 
     public Mensagem(int id, String mensagem) {
         this.id = id;
