@@ -11,15 +11,17 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import br.com.glauber.chat.R;
 import br.com.glauber.chat.adapter.MensagemAdapter;
+import br.com.glauber.chat.app.ChatApplication;
 import br.com.glauber.chat.callback.EnviarMensagensCallback;
 import br.com.glauber.chat.callback.OuvirMensagensCallback;
+import br.com.glauber.chat.component.ChatComponent;
 import br.com.glauber.chat.modelo.Mensagem;
 import br.com.glauber.chat.service.ChatService;
 import retrofit2.Call;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView listaDeMensagens;
     private List<Mensagem> mensagens;
     private MensagemAdapter adapter;
-    private ChatService chatService;
+
+    @Inject public ChatService chatService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +46,10 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText editTextMensagem = (EditText) findViewById(R.id.editText_mensagem);
 
+        ChatApplication app = (ChatApplication) getApplication();
+        ChatComponent component = app.getComponent();
+        component.inject(this);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.1.3:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        chatService = retrofit.create(ChatService.class);
         chatService.callOuvirMensagens();
 
         ouvirMensagens();
