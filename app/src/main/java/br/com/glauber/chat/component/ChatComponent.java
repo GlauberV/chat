@@ -1,6 +1,7 @@
 package br.com.glauber.chat.component;
 
 import br.com.glauber.chat.activity.MainActivity;
+import br.com.glauber.chat.adapter.MensagemAdapter;
 import br.com.glauber.chat.module.ChatModule;
 import dagger.Component;
 
@@ -12,5 +13,6 @@ import dagger.Component;
 public interface ChatComponent {
 
     void inject(MainActivity activity);
+    void inject(MensagemAdapter adapter);
 
 }

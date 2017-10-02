@@ -2,11 +2,12 @@ package br.com.glauber.chat.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +22,20 @@ import br.com.glauber.chat.callback.OuvirMensagensCallback;
 import br.com.glauber.chat.component.ChatComponent;
 import br.com.glauber.chat.modelo.Mensagem;
 import br.com.glauber.chat.service.ChatService;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity {
 
     private int idDoCliente = 1;
 
-    private Button buttonEnviar;
-    private ListView listaDeMensagens;
+    @BindView(R.id.Button_enviar) Button buttonEnviar;
+    @BindView(R.id.EditText_mensagem) EditText editTextMensagem;
+    @BindView(R.id.ListView_listaDeMensagens) ListView listaDeMensagens;
+    @BindView(R.id.ImageView_imagem) ImageView avatar;
+
     private List<Mensagem> mensagens;
     private MensagemAdapter adapter;
 
@@ -39,31 +46,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        listaDeMensagens = (ListView) findViewById(R.id.listview_listaDeMensagens);
+        ButterKnife.bind(this);
+
         mensagens = new ArrayList<>();
         adapter = new MensagemAdapter(idDoCliente, mensagens, this);
         listaDeMensagens.setAdapter(adapter);
-
-        final EditText editTextMensagem = (EditText) findViewById(R.id.editText_mensagem);
 
         ChatApplication app = (ChatApplication) getApplication();
         ChatComponent component = app.getComponent();
         component.inject(this);
 
-        chatService.callOuvirMensagens();
+        Picasso.with(this)
+                .load("https://api.adorable.io/avatars/285/" + idDoCliente +".png")
+                .into(avatar);
 
+        chatService.callOuvirMensagens();
         ouvirMensagens();
 
-        buttonEnviar = (Button) findViewById(R.id.button_enviar);
-        buttonEnviar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chatService.enviar(new Mensagem(idDoCliente, editTextMensagem.getText().toString()))
-                        .enqueue(new EnviarMensagensCallback());
-                Toast.makeText(MainActivity.this, "Enviando...", Toast.LENGTH_SHORT).show();
-            }
-        });
+    }
 
+    @OnClick(R.id.Button_enviar)
+    public void enviarMensagem(){
+        chatService.enviar(new Mensagem(idDoCliente, editTextMensagem.getText().toString()))
+                .enqueue(new EnviarMensagensCallback());
     }
 
     public void colocaNaLista(Mensagem mensagem) {
