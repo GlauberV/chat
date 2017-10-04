@@ -19,6 +19,6 @@ public interface ChatService {
     Call<Void> enviar(@Body Mensagem mensagem);
 
     @GET("polling")
-    Call<Mensagem> callOuvirMensagens();
+    Call<Mensagem> pegarMensagem();
 
 }

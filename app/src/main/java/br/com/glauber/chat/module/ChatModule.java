@@ -1,14 +1,19 @@
 package br.com.glauber.chat.module;
 
 import android.app.Application;
+import android.view.inputmethod.InputMethodManager;
 
 import com.squareup.picasso.Picasso;
+
+import org.greenrobot.eventbus.EventBus;
 
 import br.com.glauber.chat.service.ChatService;
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 /**
  * Created by Glauber on 29/09/2017.
@@ -38,5 +43,19 @@ public class ChatModule {
     public Picasso picasso(){
         Picasso picasso = new Picasso.Builder(app).build();
         return picasso;
+    }
+
+    @Provides
+    public EventBus getEventBus(){
+        EventBus eventBus = EventBus.builder().build();
+        return eventBus;
+    }
+
+    @Provides
+    public InputMethodManager getInputMethodManager(){
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) app.getSystemService(INPUT_METHOD_SERVICE);
+
+        return inputMethodManager;
     }
 }

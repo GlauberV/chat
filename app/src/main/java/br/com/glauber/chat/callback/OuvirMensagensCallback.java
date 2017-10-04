@@ -1,6 +1,12 @@
 package br.com.glauber.chat.callback;
 
-import br.com.glauber.chat.activity.MainActivity;
+import android.content.Context;
+import android.util.Log;
+
+import org.greenrobot.eventbus.EventBus;
+
+import br.com.glauber.chat.event.FailMensagemEvent;
+import br.com.glauber.chat.event.MensagemEvent;
 import br.com.glauber.chat.modelo.Mensagem;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -12,10 +18,12 @@ import retrofit2.Response;
 
 public class OuvirMensagensCallback implements Callback<Mensagem> {
 
-    private MainActivity activity;
+    private Context context;
+    private EventBus eventBus;
 
-    public OuvirMensagensCallback(MainActivity activity) {
-        this.activity = activity;
+    public OuvirMensagensCallback(EventBus eventBus, Context context) {
+        this.context = context;
+        this.eventBus = eventBus;
     }
 
 
@@ -23,13 +31,15 @@ public class OuvirMensagensCallback implements Callback<Mensagem> {
     public void onResponse(Call<Mensagem> call, Response<Mensagem> response) {
         if (response.isSuccessful()) {
             Mensagem mensagem = response.body();
-            activity.colocaNaLista(mensagem);
 
+            eventBus.post(new MensagemEvent(mensagem));
+            Log.e("OMC success", "Evento disparado! Mensagem: " + mensagem.getText().toString());
         }
     }
 
     @Override
     public void onFailure(Call<Mensagem> call, Throwable t) {
-        activity.ouvirMensagens();
+        eventBus.post(new FailMensagemEvent());
+        Log.i("OMC error", t.getMessage().toString());
     }
 }
